@@ -49,7 +49,7 @@ public class PopupExtension extends AbstractExtension {
 
             @Override
             public void setOpen(final boolean open) {
-                if (open != getState().open) {
+                if (open != getState(false).open) {
                     getState().open = open;
                     fireVisibilityListeners();
                 }
@@ -94,7 +94,7 @@ public class PopupExtension extends AbstractExtension {
         } else {
             final ComponentContainer ccContent = (ComponentContainer) content;
             popup.dataTransferComponent = new PopupExtensionDataTransferComponent(
-                    popup.getState().id);
+                    popup.getState(false).id);
             ccContent.addComponent(popup.dataTransferComponent);
 
             if (ccContent instanceof AbstractOrderedLayout) {
@@ -126,7 +126,7 @@ public class PopupExtension extends AbstractExtension {
         final PopupExtension popup = new PopupExtension();
         popup.extend((AbstractClientConnector) c);
         final PopupExtensionDataTransferComponent dataTransferComponent = new PopupExtensionDataTransferComponent(
-                popup.getState().id);
+                popup.getState(false).id);
         popup.dataTransferComponent = dataTransferComponent;
 
         return new PopupExtensionManualBundle() {
@@ -166,17 +166,40 @@ public class PopupExtension extends AbstractExtension {
         fireVisibilityListeners();
     }
 
+    /**
+     * @deprecated Use {@link #setCloseOnOutsideMouseClick(boolean)} instead.
+     */
     public void closeOnOutsideMouseClick(final boolean enable) {
+        setCloseOnOutsideMouseClick(enable);
+    }
+
+    /**
+     * Configures this instance to close on outside mouse click.
+     *
+     * @param enable
+     *         {@code true} to enable outside mouse click, {@code false} to
+     *         disable it
+     */
+    public void setCloseOnOutsideMouseClick(boolean enable) {
         getState().closeOnOutsideMouseClick = enable;
     }
 
     /**
-     * @return <code>true</code> iff this instance has been configured to close
-     * on outside mouse click.
-     * @see PopupExtension#closeOnOutsideMouseClick(boolean)
+     * @deprecated Use {@link #isCloseOnOutsideMouseClick()} instead.
      */
     public boolean closeOnOutsideMouseClick() {
-        return getState().closeOnOutsideMouseClick;
+        return isCloseOnOutsideMouseClick();
+    }
+
+    /**
+     * Returns whether this instance is configured to close on outside mouse
+     * click.
+     *
+     * @return {@code true} if this instance is configured to close on outside
+     * mouse click, {@code false} otherwise
+     */
+    public boolean isCloseOnOutsideMouseClick() {
+        return getState(false).closeOnOutsideMouseClick;
     }
 
     /**
@@ -242,7 +265,7 @@ public class PopupExtension extends AbstractExtension {
     }
 
     public boolean isOpen() {
-        return getState().open;
+        return getState(false).open;
     }
 
     public void setOffset(final int x, final int y) {
@@ -253,6 +276,11 @@ public class PopupExtension extends AbstractExtension {
     @Override
     protected PopupExtensionState getState() {
         return (PopupExtensionState) super.getState();
+    }
+
+    @Override
+    protected PopupExtensionState getState(boolean markAsDirty) {
+        return (PopupExtensionState) super.getState(markAsDirty);
     }
 
     /**
@@ -281,7 +309,7 @@ public class PopupExtension extends AbstractExtension {
 
     private void fireVisibilityListeners() {
         for (final PopupVisibilityListener listener : listeners) {
-            listener.visibilityChanged(getState().open);
+            listener.visibilityChanged(getState(false).open);
         }
     }
 
@@ -302,6 +330,6 @@ public class PopupExtension extends AbstractExtension {
      * Get the current CSS style name for the popup.
      */
     public String getPopupStyleName() {
-        return getState().popupStyleName;
+        return getState(false).popupStyleName;
     }
 }
