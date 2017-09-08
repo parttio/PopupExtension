@@ -78,6 +78,12 @@ public class PopupExtension extends AbstractExtension {
         popup.extend((AbstractClientConnector) c);
 
         final Component content = UI.getCurrent().getContent();
+
+        if (content == null) {
+            throw new NullPointerException("UI content is not present."
+                    + "Please call setContent() before PopupExtension.extend()");
+        }
+
         if (!(content instanceof ComponentContainer)) {
             throw new UnsupportedOperationException(
                     "UI.getCurrent().getContent() doesn't "
